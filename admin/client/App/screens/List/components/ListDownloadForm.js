@@ -48,6 +48,7 @@ var ListDownloadForm = React.createClass({
 	togglePopout (visible) {
 		this.setState({
 			isOpen: visible,
+			selectedColumns: visible ? this.getDefaultSelectedColumns() : this.state.selectedColumns
 		});
 	},
 	toggleColumn (column, value) {
