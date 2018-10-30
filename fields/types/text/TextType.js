@@ -44,6 +44,10 @@ text.prototype.validateRequiredInput = function (item, data, callback) {
  * Add filters to a query
  */
 text.prototype.addFilterToQuery = function (filter) {
+	if (this.options.caseSensitive) {
+		filter.caseSensitive = true
+	}
+
 	var query = {};
 	if (filter.mode === 'exactly' && !filter.value) {
 		query[this.path] = filter.inverted ? { $nin: ['', null] } : { $in: ['', null] };
