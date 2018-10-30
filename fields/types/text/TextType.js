@@ -61,6 +61,11 @@ text.prototype.addFilterToQuery = function (filter) {
 	} else if (filter.mode === 'exactly') {
 		value = '^' + value + '$';
 	}
+
+	if (value[0] !== '^' && options.indexSearch) {
+		value = '^' + value;
+	}
+
 	value = new RegExp(value, filter.caseSensitive ? '' : 'i');
 	query[this.path] = filter.inverted ? { $not: value } : value;
 	return query;
