@@ -62,7 +62,7 @@ text.prototype.addFilterToQuery = function (filter) {
 		value = '^' + value + '$';
 	}
 
-	if (value[0] !== '^' && options.indexSearch) {
+	if (value[0] !== '^' && this.options.indexSearch) {
 		value = '^' + value;
 	}
 
