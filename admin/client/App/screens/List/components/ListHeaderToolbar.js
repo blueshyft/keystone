@@ -100,13 +100,15 @@ function ListHeaderToolbar ({
 							dispatch={dispatch}
 						/>
 					</Section>
-					<Section cssStyles={classes.download}>
-						<ListDownloadForm
-							activeColumns={columnsActive}
-							dispatch={dispatch}
-							list={list}
-						/>
-					</Section>
+					{ list.noDownloadList ? null : (
+						<Section cssStyles={classes.download}>
+							<ListDownloadForm
+								activeColumns={columnsActive}
+								dispatch={dispatch}
+								list={list}
+							/>
+						</Section>
+					)}
 					<Section cssStyles={classes.expand}>
 						<ButtonDivider>
 							<GlyphButton
