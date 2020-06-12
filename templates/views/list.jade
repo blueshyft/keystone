@@ -188,7 +188,7 @@ block content
 					if items.total
 						.pull-right.hidden-xs
 							.pull-right
-								if !list.noDownloadList
+								if !list.options.noDownloadList
 									a(href=download_link, data-confirm="Download a .csv of #{utils.plural(items.total, '* ' + list.singular, '* ' + list.plural).toLowerCase()}?").btn.btn-default Download
 							div(style='margin-right: 10px;').dropdown.list-columns-dropdown.pull-right
 								button(type='button', data-toggle='dropdown').btn.btn-default.dropdown-toggle
