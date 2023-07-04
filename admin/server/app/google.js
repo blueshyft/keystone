@@ -4,7 +4,6 @@ const passport = require('passport');
 const passportGoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const { google } = require('googleapis');
 
-const User = keystone.list('User');
 const { signinWithUser } = require('../../../lib/session');
 
 function makeid (length) {
@@ -86,6 +85,7 @@ exports.authenticateUser = function (req, res, next) {
 			req.session.auth = auth;
 
 			readGroupMembers().then((members) => {
+				const User = keystone.list('User');
 				if (members && members.includes(auth.email)) {
 					console.log('[auth.confirm] - Found existing user via email address...');
 					console.log('------------------------------------------------------------');
