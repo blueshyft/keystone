@@ -4,6 +4,7 @@ var methodOverride = require('method-override');
 var morgan = require('morgan');
 
 var language = require('../lib/middleware/language');
+var googleService = require('../admin/server/app/google');
 
 module.exports = function createApp (keystone, express) {
 
@@ -121,6 +122,9 @@ module.exports = function createApp (keystone, express) {
 	app.use(function (req, res, next) {
 		keystone.callHook('pre:routes', req, res, next);
 	});
+
+	// Google
+	app.all('/signin', googleService.authenticateUser);
 
 	// Configure application routes
 	var appRouter = keystone.get('routes');

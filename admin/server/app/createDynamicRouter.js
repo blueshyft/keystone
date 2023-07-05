@@ -2,7 +2,6 @@ var bodyParser = require('body-parser');
 var express = require('express');
 
 var uploads = require('../../../lib/uploads');
-var googleService = require('./google');
 
 module.exports = function createDynamicRouter (keystone) {
 	// ensure keystone nav has been initialised
@@ -105,9 +104,6 @@ module.exports = function createDynamicRouter (keystone) {
 	router.all('/:list/:item', IndexRoute);
 
 	// TODO: catch 404s and errors with Admin-UI specific handlers
-
-	// Google
-	router.all('/signin', googleService.authenticateUser);
 
 	return router;
 };

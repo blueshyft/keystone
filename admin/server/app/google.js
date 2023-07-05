@@ -3,6 +3,7 @@ const keystone = require('keystone');
 const passport = require('passport');
 const passportGoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const { google } = require('googleapis');
+const path = require('path');
 
 const { signinWithUser } = require('../../../lib/session');
 
@@ -121,17 +122,18 @@ exports.authenticateUser = function (req, res, next) {
 };
 
 
-const auth = new google.auth.GoogleAuth({
-	keyFile: keystone.get('google sso key path'),
-	scopes: ['https://www.googleapis.com/auth/admin.directory.group.readonly'],
-});
-
-const admin = google.admin({
-	version: 'directory_v1',
-	auth: auth,
-});
-
 const readGroupMembers = async function () {
+	const currentPath = process.cwd();
+	const auth = new google.auth.GoogleAuth({
+		keyFile: path.join(currentPath, keystone.get('google sso key path')),
+		scopes: ['https://www.googleapis.com/auth/admin.directory.group.readonly'],
+	});
+
+	const admin = google.admin({
+		version: 'directory_v1',
+		auth: auth,
+	});
+
 	const usersRequest = admin.members.list({
 		groupKey: keystone.get('google sso group id'),
 	});
