@@ -46,6 +46,7 @@
     "less-middleware": "^2.0.1",
     "letsencrypt-express": "^1.1.5",
     "list-to-array": "^1.1.0",
+    "lodash": "^4.17.21",
     "mailgun-js": "^0.7.10",
     "mandrill-api": "^1.0.45",
     "marked": "^0.3.5",
