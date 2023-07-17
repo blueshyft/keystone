@@ -95,7 +95,7 @@
   },
   "overrides": {
     "cloudinary@1.2.5": {
-      "lodash": "^4.17.21"
+      "lodash": "$lodash"
     }
   },
   "browserify": {
