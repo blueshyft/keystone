@@ -93,6 +93,11 @@
     "supertest": "^1.1.0",
     "vinyl-source-stream": "^1.1.0"
   },
+  "overrides": {
+    "cloudinary@1.2.5": {
+      "lodash": "^4.17.21"
+    }
+  },
   "browserify": {
     "transform": [
       "babelify",
