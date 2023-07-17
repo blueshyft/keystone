@@ -107,7 +107,7 @@ exports.authenticateUser = function (req, res, next) {
 				} else {
 					console.log('[auth.confirm] - Error finding existing user via email.', err);
 					console.log('------------------------------------------------------------');
-					return res.status(400).send(keystone.wrapHTMLError('Error finding existing user via email, access denied', err.message));
+					return res.status(400).send(keystone.wrapHTMLError('Error finding existing user via email, access denied'));
 				}
 			});
 		})(req, res, next);
