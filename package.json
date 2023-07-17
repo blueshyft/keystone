@@ -94,9 +94,7 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "overrides": {
-    "cloudinary@1.2.5": {
-      "lodash": "$lodash"
-    }
+    "lodash": "$lodash"
   },
   "browserify": {
     "transform": [
