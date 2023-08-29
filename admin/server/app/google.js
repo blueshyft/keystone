@@ -7,7 +7,7 @@ const path = require('path');
 
 const { signinWithUser } = require('../../../lib/session');
 
-function makeid (length) {
+function makeid(length) {
 	let result = '';
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	const charactersLength = characters.length;
@@ -94,12 +94,16 @@ exports.authenticateUser = function (req, res, next) {
 						if (!user) {
 							User.model.create({ email: auth.email, password: makeid(15), name: auth.name, isAdmin: true }, (err, user) => {
 								return signinWithUser(user, req, res, () => {
-									return res.redirect('/keystone');
+									const redirectTo = keystone.get('signin redirect') || '/'
+									if (_.isFunction(redirectTo)) return redirectTo(user, req, res)
+									return res.redirect(redirectTo);
 								});
 							});
 						} else {
 							return signinWithUser(user, req, res, () => {
-								return res.redirect('/keystone');
+								const redirectTo = keystone.get('signin redirect') || '/'
+								if (_.isFunction(redirectTo)) return redirectTo(user, req, res)
+								return res.redirect(redirectTo);
 							});
 						}
 					});
@@ -112,7 +116,7 @@ exports.authenticateUser = function (req, res, next) {
 			});
 		})(req, res, next);
 
-	// Perform initial authentication request to Google
+		// Perform initial authentication request to Google
 	} else {
 		console.log('[services.google] - Authentication workflow detected, attempting to request access...');
 		console.log('------------------------------------------------------------');
