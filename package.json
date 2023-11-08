@@ -108,6 +108,9 @@
     "watchify": "^3.11.1",
     "xhr": "^2.5.0"
   },
+  "overrides": {
+    "chromedriver": "119.0.1"
+  },
   "devDependencies": {
     "@babel/register": "^7.4.4",
     "browserify-middleware": "^8.1.1",
