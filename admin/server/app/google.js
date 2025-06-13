@@ -7,7 +7,7 @@ const path = require('path');
 
 const { signinWithUser } = require('../../../lib/session');
 
-function makeid(length) {
+function makeid (length) {
 	let result = '';
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	const charactersLength = characters.length;
@@ -85,29 +85,27 @@ exports.authenticateUser = function (req, res, next) {
 
 			req.session.auth = auth;
 
-			readGroupMembers().then((members) => {
+			readGroupMembers().then(async (members) => {
 				const User = keystone.list('User');
 				if (members && members.includes(auth.email)) {
 					console.log('[auth.confirm] - Found existing user via email address...');
 					console.log('------------------------------------------------------------');
-					User.model.findOne({ email: auth.email }, (err, user) => {
-						if (!user) {
-							User.model.create({ email: auth.email, password: makeid(15), name: auth.name, isAdmin: true }, (err, user) => {
-								return signinWithUser(user, req, res, () => {
-									const redirectTo = keystone.get('signin redirect') || '/'
-									if (_.isFunction(redirectTo)) return redirectTo(user, req, res)
-									return res.redirect(redirectTo);
-								});
-							});
-						} else {
+					const user = await User.model.findOne({ email: auth.email });
+					if (!user) {
+						User.model.create({ email: auth.email, password: makeid(15), name: auth.name, isAdmin: true }, (err, user) => {
 							return signinWithUser(user, req, res, () => {
-								const redirectTo = keystone.get('signin redirect') || '/'
-								if (_.isFunction(redirectTo)) return redirectTo(user, req, res)
+								const redirectTo = keystone.get('signin redirect') || '/';
+								if (_.isFunction(redirectTo)) return redirectTo(user, req, res);
 								return res.redirect(redirectTo);
 							});
-						}
-					});
-
+						});
+					} else {
+						return signinWithUser(user, req, res, () => {
+							const redirectTo = keystone.get('signin redirect') || '/';
+							if (_.isFunction(redirectTo)) return redirectTo(user, req, res);
+							return res.redirect(redirectTo);
+						});
+					}
 				} else {
 					console.log('[auth.confirm] - Error finding existing user via email.', err);
 					console.log('------------------------------------------------------------');

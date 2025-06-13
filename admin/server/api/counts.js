@@ -4,10 +4,10 @@ module.exports = function (req, res) {
 	var keystone = req.keystone;
 	var counts = {};
 	async.each(keystone.lists, function (list, next) {
-		list.model.estimatedDocumentCount(function (err, count) {
+		list.model.estimatedDocumentCount().then(function (count) {
 			counts[list.key] = count;
-			next(err);
-		});
+			next();
+		}).catch(next);
 	}, function (err) {
 		if (err) return res.apiError('database error', err);
 		return res.json({
