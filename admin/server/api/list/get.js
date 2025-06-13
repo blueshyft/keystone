@@ -44,7 +44,8 @@ module.exports = function (req, res) {
 			if (!includeCount) {
 				return next(null, 0);
 			}
-			query.estimatedDocumentCount(next);
+			const query1 = query.clone();
+			query1.estimatedDocumentCount().then((count) => next(null, count)).catch(err => next(err));
 		},
 		function (count, next) {
 			if (!includeResults) {
@@ -56,9 +57,7 @@ module.exports = function (req, res) {
 			if (sort.string) {
 				query.sort(sort.string);
 			}
-			query.exec(function (err, items) {
-				next(err, count, items);
-			});
+			query.exec().then(items => next(null, count, items)).catch(err => next(err, count));
 		},
 	], function (err, count, items) {
 		if (err) {

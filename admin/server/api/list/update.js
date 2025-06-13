@@ -11,8 +11,7 @@ module.exports = function (req, res) {
 	}
 	// var updateCount = 0;
 	async.map(req.body.items, function (data, done) {
-		req.list.model.findById(data.id, function (err, item) {
-			if (err) return done({ statusCode: 500, error: 'database error', detail: err, id: data.id });
+		req.list.model.findById(data.id).then((item) => {
 			if (!item) return done({ statusCode: 404, error: 'not found', id: data.id });
 			req.list.updateItem(item, data, { files: req.files, user: req.user }, function (err) {
 				if (err) {
@@ -24,7 +23,7 @@ module.exports = function (req, res) {
 				// updateCount++;
 				done(null, req.query.returnData ? req.list.getData(item) : item.id);
 			});
-		});
+		}).catch(err => { return done({ statusCode: 500, error: 'database error', detail: err, id: data.id }); });
 	}, function (err, results) {
 		if (err) {
 			if (err.statusCode) {

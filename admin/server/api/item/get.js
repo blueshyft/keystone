@@ -2,7 +2,7 @@ var _ = require('lodash');
 var async = require('async');
 var listToArray = require('list-to-array');
 
-module.exports = function (req, res) {
+module.exports = async function (req, res) {
 	var keystone = req.keystone;
 	var query = req.list.model.findById(req.params.id);
 
@@ -17,9 +17,8 @@ module.exports = function (req, res) {
 		return res.status(401).json({ error: 'fields must be undefined, a string, or an array' });
 	}
 
-	query.exec(function (err, item) {
-
-		if (err) return res.status(500).json({ err: 'database error', detail: err });
+	try {
+		const item = await query.exec();
 		if (!item) return res.status(404).json({ err: 'not found', id: req.params.id });
 
 		var tasks = [];
@@ -53,9 +52,9 @@ module.exports = function (req, res) {
 						if (!item.get(field.path).length) {
 							return done();
 						}
-						refList.model.find().where('_id').in(item.get(field.path)).limit(4).exec(function (err, results) {
-							if (err || !results) {
-								done(err);
+						refList.model.find().where('_id').in(item.get(field.path)).limit(4).exec().then((results) => {
+							if (!results) {
+								done();
 							}
 							var more = (results.length === 4) ? results.pop() : false;
 							if (results.length) {
@@ -72,12 +71,12 @@ module.exports = function (req, res) {
 								});
 							}
 							done();
-						});
+						}).catch(done);
 					} else {
 						if (!item.get(field.path)) {
 							return done();
 						}
-						refList.model.findById(item.get(field.path)).exec(function (err, result) {
+						refList.model.findById(item.get(field.path)).exec().then(result => {
 							if (result) {
 								// drilldown.data[path] = result;
 								drilldown.items.push({
@@ -88,8 +87,8 @@ module.exports = function (req, res) {
 									}],
 								});
 							}
-							done(err);
-						});
+							done();
+						}).catch(done);
 					}
 
 				}, function (err) {
@@ -114,5 +113,8 @@ module.exports = function (req, res) {
 				drilldown: drilldown,
 			}));
 		});
-	});
+	} catch (err) {
+		return res.status(500).json({ err: 'database error', detail: err });
+	}
+
 };
