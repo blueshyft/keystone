@@ -11,7 +11,7 @@ function signin (req, res) {
 	}
 	var User = keystone.list(keystone.get('user model'));
 	var emailRegExp = new RegExp('^' + utils.escapeRegExp(req.body.email) + '$', 'i');
-	User.model.findOne({ email: emailRegExp }).exec(function (err, user) {
+	User.model.findOne({ email: emailRegExp }).exec().then((user) => {
 		if (user) {
 			keystone.callHook(user, 'pre:signin', req, function (err) {
 				if (err) return res.status(500).json({ error: 'pre:signin error', detail: err });
@@ -30,11 +30,11 @@ function signin (req, res) {
 					}
 				});
 			});
-		} else if (err) {
-			return res.status(500).json({ error: 'database error', detail: err });
 		} else {
 			return res.status(401).json({ error: 'invalid details' });
 		}
+	}).catch(err => {
+		return res.status(500).json({ error: 'database error', detail: err });
 	});
 }
 
