@@ -78,10 +78,7 @@ module.exports = function (req, res) {
 	if (relFields) {
 		query.populate(relFields.join(' '));
 	}
-	query.exec(function (err, results) {
-
-		if (err) return res.status(500).json(err);
-
+	query.exec().then((err, results) => {
 		var sendCSV = function (data) {
 
 			res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
@@ -182,6 +179,6 @@ module.exports = function (req, res) {
 			return sendCSV(data);
 		}
 
-	});
+	}).catch(err => { return res.status(500).json(err); });
 
 };
