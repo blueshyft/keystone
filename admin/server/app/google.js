@@ -92,7 +92,7 @@ exports.authenticateUser = function (req, res, next) {
 					console.log('------------------------------------------------------------');
 					const user = await User.model.findOne({ email: auth.email });
 					if (!user) {
-						User.model.create({ email: auth.email, password: makeid(15), name: auth.name, isAdmin: true }, (err, user) => {
+						User.model.create({ email: auth.email, password: makeid(15), name: auth.name, isAdmin: true }).then((user) => {
 							return signinWithUser(user, req, res, () => {
 								const redirectTo = keystone.get('signin redirect') || '/';
 								if (_.isFunction(redirectTo)) return redirectTo(user, req, res);
