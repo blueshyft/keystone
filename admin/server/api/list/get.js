@@ -44,8 +44,8 @@ module.exports = function (req, res) {
 			if (!includeCount) {
 				return next(null, 0);
 			}
-			const query1 = query.clone();
-			query1.estimatedDocumentCount().then((count) => next(null, count)).catch(err => next(err));
+
+			query.clone().countDocuments().then((count) => next(null, count)).catch(err => next(err));
 		},
 		function (count, next) {
 			if (!includeResults) {
