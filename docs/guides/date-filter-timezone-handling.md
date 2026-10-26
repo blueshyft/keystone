@@ -22,15 +22,13 @@ behavior.
 
 On 2026-10-26, SodaKing reported that filtering Stock Orders by `createdAt` on
 October 24 showed an October 25 result. The linked live filter currently returns
-one order dated October 24 in the admin UI; selecting October 24 again in the
-current browser returns the same result. So the specific report is not
-reproducing in the current session. The linked filter value is
-`2026-10-24T01:00:00.000Z`, which is noon on October 24 at UTC+11. The live
-SodaKing host reports AEDT, and its Node process has no `TZ` override, so the
-browser and server appear to have used the same timezone for this report. The
-timezone mismatch in the shared implementation is still a real Keystone bug
-when a browser and server use different timezones, but current evidence does
-not establish that it caused this particular SodaKing result.
+one order dated October 24 in the admin UI; selecting October 24 again after the
+canary deploy returns the same result. The link's value,
+`2026-10-24T01:00:00.000Z`, is noon on October 24 at UTC+11. The live host reports
+AEDT, and the app has no `TZ` override in its production environment, so current
+evidence does not connect the reported result to a browser/server timezone
+mismatch. The shared timezone defect is still real when those zones differ, but
+it is not a confirmed cause of this particular report.
 
 ## Keystone consumers to roll forward
 
@@ -40,8 +38,9 @@ admin filters use it:
 
 | Current Keystone pin | Consumers |
 | --- | --- |
-| `blu-v4.3.0` | `alipay-platform`, `coinspot-platform`, `cointree-platform`, `cs-dashboard-old`, `goget-platform`, `logistics-api`, `mmg-platform`, `payments`, `sodaking-api`, `toll-ftp`, `toll-platform`, `transactions-api`, `website-v2` |
+| `blu-v4.3.0` | `alipay-platform`, `coinspot-platform`, `cointree-platform`, `cs-dashboard-old`, `goget-platform`, `logistics-api`, `mmg-platform`, `payments`, `toll-ftp`, `toll-platform`, `transactions-api`, `website-v2` |
 | `blu-v4.3.1` | `core`, `parcels-platform`, `reports`, `tnt-api` |
+| `blu-v4.3.2` | `sodaking-api` (live canary deployed 2026-10-26) |
 
 `marketing-platform` (`blu-v4.2.1`) and `tge-platform`
 (`blu-v4.2.1-google`) are separate pinned branches; backport this fix there if
@@ -50,6 +49,6 @@ unless its separate Keystone upgrade is approved. `template-platform`,
 `havven-website`, and `parcels-sdk` use other Keystone versions and need a
 separate compatibility review if they expose admin date filters.
 
-The SodaKing production app still pins `blu-v4.3.0`; this source change does
-not reach production until the custom Keystone release is published and the
-consumer dependency is updated and deployed.
+SodaKing is the first live consumer on `blu-v4.3.2`; its lockfile resolves the
+Keystone release commit. The other listed apps still need their dependency
+updated, rebuilt, and deployed before the fix reaches them.
