@@ -51,6 +51,7 @@ been pushed for the upgraded fleet consumers.
 | Deployed | `website-v2`, `cs-dashboard-old`, `core` — Core Staging | All three resolve to Keystone 4.3.3. Core and site health routes returned HTTP 200 with valid TLS; the existing `core-workers` process was left untouched. |
 | Deployed | `transactions-api` — live and staging | Both resolve to Keystone 4.3.3 and health returned HTTP 200 with valid TLS. Staging's single API process was restarted directly so embedded scheduled jobs did not overlap across instances. |
 | Deployed | `goget-platform` — live | The host's installed tree resolves to Keystone 4.3.3 at `9239b834`; Git fetch reached master `05a95ad6`. `/health` returned HTTP 200 with valid TLS. |
+| Deployed | `blueshyft-sandbox`, `blueshyft-sandbox-stub` — Sandbox Staging | App commit `6bd084e`; both resolve to Keystone 4.3.3 at `9239b834`. Password auth is enabled in both Keystone configurations. `/health` returned HTTP 200 with valid TLS; the homepage redirects to a sign-in page showing Email and Password fields. |
 | Deployed | `logistics-api`, `payments`, `parcels` — staging and live as applicable | Package updates were deployed and public health routes returned HTTP 200 with valid TLS. The `payments` and `parcels` worker processes were left untouched. |
 | Already current | `tnt-api` — live | Already resolved to Keystone 4.3.3; health returned HTTP 200 with valid TLS. A read-only deployment key enables server-side Git checkout. |
 | Candidate only | `core` — Ubuntu 26.04.1 production candidate | Keystone 4.3.3 installed and `/health` returned HTTP 200 with valid TLS. No EIP or traffic cutover was made. |
@@ -64,17 +65,16 @@ host-key checking.
 
 ## Remaining scope and verification gaps
 
-`sandbox-staging` is the remaining upgraded host whose Keystone consumer has not
-been updated. The application repository is not present in the local Blueshyft
-workspace, and no trusted SSH host-key entry for the current host was available;
-the instance was left unchanged. The source is identified in the fleet inventory
-as `blueshyft-sandbox` at `46380c9`.
-
 The live `coinspot-platform` PM2 release and public health check succeeded, but
 the installed dependency tree could not be read over SSH without a trusted host
 key. No host-key check was bypassed. TGE staging remains stopped.
 `template-platform`, `havven-website`, and `parcels-sdk` use other Keystone
 versions and remain outside this upgraded Ubuntu/Node rollout scope.
+
+Sandbox's standard `npm install` completed. NPM reported 98 advisories in the
+dependency tree and said nine package install scripts still require approval;
+no additional scripts were approved. The pre-existing `sandbox-api` `/health`
+404 and `test-partner` 502 responses were unchanged.
 
 Transactions was included after its migration. The private `transactions-new`
 instance remains stopped as requested. No EIP or DNS changes were made for this
