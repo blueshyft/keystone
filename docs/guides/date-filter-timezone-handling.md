@@ -24,9 +24,13 @@ On 2026-10-26, SodaKing reported that filtering Stock Orders by `createdAt` on
 October 24 showed an October 25 result. The linked live filter currently returns
 one order dated October 24 in the admin UI; selecting October 24 again in the
 current browser returns the same result. So the specific report is not
-reproducing in the current session, but the shared timezone mismatch in the
-filter implementation is real and can produce this class of off-by-one result
-when the browser and server use different timezones.
+reproducing in the current session. The linked filter value is
+`2026-10-24T01:00:00.000Z`, which is noon on October 24 at UTC+11. The live
+SodaKing host reports AEDT, and its Node process has no `TZ` override, so the
+browser and server appear to have used the same timezone for this report. The
+timezone mismatch in the shared implementation is still a real Keystone bug
+when a browser and server use different timezones, but current evidence does
+not establish that it caused this particular SodaKing result.
 
 ## Keystone consumers to roll forward
 
