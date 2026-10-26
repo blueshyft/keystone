@@ -12,3 +12,4 @@ Our other guides deal with more specific topics that not every Keystone user wil
 - [Uploading A File](/guides/api-file-image-uploads)
 - [Sending Emails with Keystone](/guides/how-to-send-emails)
 - [Creating a blog with Keystone](/guides/how-to-create-a-blog-with-keystone)
+- [Date filter timezone handling](/guides/date-filter-timezone-handling)

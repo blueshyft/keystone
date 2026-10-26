@@ -48,28 +48,27 @@ date.prototype.addFilterToQuery = function (filter) {
 	var query = {};
 	if (filter.mode === 'between') {
 		if (filter.after && filter.before) {
-			filter.after = moment(filter.after);
-			filter.before = moment(filter.before);
-			if (filter.after.isValid() && filter.before.isValid()) {
-				query[this.path] = {
-					$gte: filter.after.startOf('day').toDate(),
-					$lte: filter.before.endOf('day').toDate(),
-				};
+			var hasExplicitAfter = !!filter.afterStart;
+			var hasExplicitBefore = !!filter.beforeEndExclusive;
+			var after = hasExplicitAfter ? moment(filter.afterStart) : moment(filter.after).startOf('day');
+			var before = hasExplicitBefore ? moment(filter.beforeEndExclusive) : moment(filter.before).endOf('day');
+			if (after.isValid() && before.isValid()) {
+				query[this.path] = { $gte: after.toDate() };
+				query[this.path][hasExplicitBefore ? '$lt' : '$lte'] = before.toDate();
 			}
 		}
 	} else if (filter.value) {
-		var day = {
-			moment: moment(filter.value),
-		};
-		day.start = day.moment.startOf('day').toDate();
-		day.end = moment(filter.value).endOf('day').toDate();
-		if (day.moment.isValid()) {
+		var hasExplicitRange = !!(filter.dayStart && filter.dayEndExclusive);
+		var start = filter.dayStart ? moment(filter.dayStart) : moment(filter.value).startOf('day');
+		var end = filter.dayEndExclusive ? moment(filter.dayEndExclusive) : moment(filter.value).endOf('day');
+		if (start.isValid() && end.isValid()) {
 			if (filter.mode === 'after') {
-				query[this.path] = { $gt: day.end };
+				query[this.path] = hasExplicitRange ? { $gte: end.toDate() } : { $gt: end.toDate() };
 			} else if (filter.mode === 'before') {
-				query[this.path] = { $lt: day.start };
+				query[this.path] = { $lt: start.toDate() };
 			} else {
-				query[this.path] = { $gte: day.start, $lte: day.end };
+				query[this.path] = { $gte: start.toDate() };
+				query[this.path][hasExplicitRange ? '$lt' : '$lte'] = end.toDate();
 			}
 		}
 	}

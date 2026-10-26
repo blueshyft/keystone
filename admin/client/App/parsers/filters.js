@@ -1,6 +1,43 @@
 import isPlainObject from 'lodash/isPlainObject';
 import isArray from 'lodash/isArray';
 import isObject from 'lodash/isObject';
+import moment from 'moment';
+
+const DATE_FILTER_TYPES = ['date', 'datetime', 'datearray'];
+
+/**
+ * Resolve calendar-day boundaries in the same timezone used by the filter UI.
+ * Date values are serialized as UTC instants in the query string, so the server
+ * cannot safely reconstruct the browser's start and end of day from `value`.
+ */
+function addDateFilterBoundaries (field, filterValue, preserveExistingBoundaries) {
+	if (!field || DATE_FILTER_TYPES.indexOf(field.type) === -1 || !filterValue || typeof filterValue !== 'object') {
+		return filterValue;
+	}
+
+	const value = Object.assign({}, filterValue);
+
+	if (value.mode === 'between') {
+		if (value.after && (!preserveExistingBoundaries || !value.afterStart)) {
+			const after = moment(value.after);
+			if (after.isValid()) value.afterStart = after.startOf('day').toDate();
+		}
+		if (value.before && (!preserveExistingBoundaries || !value.beforeEndExclusive)) {
+			const before = moment(value.before);
+			if (before.isValid()) value.beforeEndExclusive = before.startOf('day').add(1, 'day').toDate();
+		}
+	} else if (value.value) {
+		if (!preserveExistingBoundaries || !value.dayStart || !value.dayEndExclusive) {
+			const dayStart = moment(value.value).startOf('day');
+			if (dayStart.isValid()) {
+				value.dayStart = dayStart.toDate();
+				value.dayEndExclusive = dayStart.clone().add(1, 'day').toDate();
+			}
+		}
+	}
+
+	return value;
+}
 
 /**
  * Returns an array of expanded filter objects,
@@ -27,7 +64,7 @@ export function filtersParser (filters, currentList) {
 		const path = filter.path;
 		const value = Object.assign({}, filter);
 		delete value.path;
-		return createFilterObject(path, value, currentList.fields);
+		return createFilterObject(path, value, currentList.fields, true);
 	});
 
 	filters = assembledFilters.filter(filter => filter);
@@ -59,7 +96,7 @@ export function filterParser ({ path, value }, activeFilters, currentList) {
 
 	let filter = activeFilters.filter(i => i.field.path === path)[0];
 	if (filter) {
-		filter.value = value;
+		filter.value = addDateFilterBoundaries(filter.field, value);
 	} else {
 		filter = createFilterObject(path, value, currentList.fields);
 		if (!filter) {
@@ -86,7 +123,7 @@ export function filterParser ({ path, value }, activeFilters, currentList) {
  *	- and the passed in value { Object }.
  **/
 
-export function createFilterObject (path, value, currentListFields) {
+export function createFilterObject (path, value, currentListFields, preserveExistingBoundaries = false) {
 	if (!currentListFields || !isPlainObject(currentListFields)) {
 		console.warn('currentListFields must be a plain object', currentListFields);
 		return;
@@ -101,6 +138,6 @@ export function createFilterObject (path, value, currentListFields) {
 
 	return {
 		field,
-		value,
+		value: addDateFilterBoundaries(field, value, preserveExistingBoundaries),
 	};
 }

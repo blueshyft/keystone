@@ -1,5 +1,6 @@
 import demand from 'must';
 import { columnsParser, sortParser, filtersParser, filterParser, createFilterObject } from '../index';
+import moment from 'moment';
 import sinon from 'sinon';
 
 describe('<List> query parsers', function () {
@@ -31,6 +32,11 @@ describe('<List> query parsers', function () {
 				defaultValue: {
 					email: '',
 				},
+			},
+			date: {
+				path: 'date',
+				type: 'date',
+				label: 'Date',
 			},
 		};
 
@@ -189,6 +195,36 @@ describe('<List> query parsers', function () {
 				demand(filtersParser(stringifiedFilters, this.currentList)).eql(expectedResult);
 			});
 		});
+
+		it('adds browser-local day boundaries to date filters', function () {
+			const selectedDay = new Date(2026, 9, 24, 12);
+			const filters = filtersParser([{
+				path: 'date',
+				mode: 'on',
+				value: selectedDay,
+			}], this.currentList);
+			const start = moment(selectedDay).startOf('day');
+
+			demand(filters[0].value.dayStart).eql(start.toDate());
+			demand(filters[0].value.dayEndExclusive).eql(start.clone().add(1, 'day').toDate());
+		});
+
+		it('preserves explicit boundaries when parsing a shared filter URL', function () {
+			const explicitBoundaries = {
+				dayStart: '2026-10-23T19:00:00.000Z',
+				dayEndExclusive: '2026-10-24T19:00:00.000Z',
+			};
+			const filters = filtersParser([{
+				path: 'date',
+				mode: 'on',
+				value: '2026-10-24T07:00:00.000Z',
+				...explicitBoundaries,
+			}], this.currentList);
+
+			demand(filters[0].value.dayStart).eql(explicitBoundaries.dayStart);
+			demand(filters[0].value.dayEndExclusive).eql(explicitBoundaries.dayEndExclusive);
+		});
+
 		describe('If provided with an invalid stringified filters array', function () {
 			it('returns an empty array', function () {
 				const stringifiedFilters = 'jemena';
@@ -211,6 +247,26 @@ describe('<List> query parsers', function () {
 				demand(filterParser(this.addedFilter, this.activeFilters, this.currentList)).eql(expectedResult);
 			});
 		});
+
+		it('recalculates boundaries when a selected date changes', function () {
+			const previousValue = {
+				mode: 'on',
+				value: new Date(2026, 9, 23, 12),
+				dayStart: new Date(2026, 9, 23),
+				dayEndExclusive: new Date(2026, 9, 24),
+			};
+			const activeFilters = [{ field: this.fields.date, value: previousValue }];
+			const selectedDay = new Date(2026, 9, 24, 12);
+			const filter = filterParser({
+				path: 'date',
+				value: Object.assign({}, previousValue, { value: selectedDay }),
+			}, activeFilters, this.currentList);
+			const start = moment(selectedDay).startOf('day');
+
+			demand(filter.value.dayStart).eql(start.toDate());
+			demand(filter.value.dayEndExclusive).eql(start.clone().add(1, 'day').toDate());
+		});
+
 		describe('Given that activeFilters is not an array', function () {
 			it('throws an error', function () {
 				const invalidActiveFilters = 'hello there';

@@ -225,6 +225,18 @@ exports.testFieldType = function (List) {
 			});
 		});
 
+		it('should use explicit client-local boundaries for a specific date', function () {
+			var start = new Date('2026-10-23T19:00:00.000Z');
+			var nextDay = new Date('2026-10-24T19:00:00.000Z');
+			var result = List.fields.date.addFilterToQuery({
+				mode: 'on',
+				value: '2026-10-24T07:00:00.000Z',
+				dayStart: start,
+				dayEndExclusive: nextDay,
+			});
+			demand(result.date).eql({ $gte: start, $lt: nextDay });
+		});
+
 		it('should filter after a specific date', function () {
 			var result = List.fields.date.addFilterToQuery({
 				mode: 'after',
@@ -255,6 +267,19 @@ exports.testFieldType = function (List) {
 				$gte: moment('2015-01-01').startOf('day').toDate(),
 				$lte: moment('2016-01-01').endOf('day').toDate(),
 			});
+		});
+
+		it('should use explicit client-local boundaries between two dates', function () {
+			var start = new Date('2026-10-23T19:00:00.000Z');
+			var endExclusive = new Date('2026-10-25T19:00:00.000Z');
+			var result = List.fields.date.addFilterToQuery({
+				mode: 'between',
+				after: '2026-10-24T07:00:00.000Z',
+				before: '2026-10-25T07:00:00.000Z',
+				afterStart: start,
+				beforeEndExclusive: endExclusive,
+			});
+			demand(result.date).eql({ $gte: start, $lt: endExclusive });
 		});
 
 		it('should support inverted filtering', function () {
