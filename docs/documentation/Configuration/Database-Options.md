@@ -20,6 +20,10 @@ When this is set to `false` (or not defined), Keystone's Admin UI will be open t
 
 If using a custom function, it should follow the standard for express middleware of `function(req, res, next)`. If a user is not logged in or should not access Keystone's Admin UI, use `res.redirect()` to redirect them - otherwise call the `next` callback to enable access.
 
+<h4 data-primitive-type="Boolean"><code>password auth enabled</code></h4>
+
+When Google sign-in is installed by the application, the Admin UI sign-in route redirects to Google by default. Set this option to `true` to render Keystone's built-in email/password sign-in page instead. The default is `false`.
+
 <h4 data-primitive-type="String"><code>user model</code></h4>
 
 The key of the Keystone List for users, **required** if `auth` is set to true

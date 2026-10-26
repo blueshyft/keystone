@@ -4,9 +4,11 @@ var path = require('path');
 var templatePath = path.resolve(__dirname, '../templates/signin.html');
 
 module.exports = function SigninRoute (req, res) {
-	return res.redirect('/signin');
-
 	var keystone = req.keystone;
+	if (!keystone.get('password auth enabled')) {
+		return res.redirect('/signin');
+	}
+
 	var UserList = keystone.list(keystone.get('user model'));
 	var locals = {
 		adminPath: '/' + keystone.get('admin path'),

@@ -18,6 +18,10 @@ day) for on/between filters, which also handles daylight-saving days that are
 API callers that omit these boundary fields keep the prior server-local
 behavior.
 
+Keystone 4.3.3 also restores the built-in password sign-in page as an opt-in
+for apps that need it. Set `password auth enabled` to `true`; the default keeps
+the existing Google sign-in redirect.
+
 ## SodaKing report and current reproduction
 
 On 2026-10-26, SodaKing reported that filtering Stock Orders by `createdAt` on
