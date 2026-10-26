@@ -45,7 +45,7 @@ been pushed for the upgraded fleet consumers.
 | Deployed | `alipay-platform`, `cointree-platform`, `mmg-platform`, `reports` — live | `npm ls` resolves Keystone 4.3.3 and health routes returned HTTP 200 with valid TLS. MMG and Reports workers kept their original processes. |
 | Deployed | `sodaking-api` — live | Release commit `808918c`; Keystone resolves to `9239b834`. Health returned HTTP 200 with valid TLS. Only the API process was reloaded; the worker was left running. |
 | Deployed | `marketing-platform` — live | Release commit `3d940bf`; Keystone 4.3.3 and `password auth enabled: true`. Health and `/keystone/signin` returned HTTP 200 with valid TLS; sign-in no longer redirects to Google. The separate worker service stayed active. |
-| Deployed | `coinspot-platform` — live | PM2 release at `3447d8c` completed and `/health` returned HTTP 200 with valid TLS. The installed dependency tree was not checked directly over SSH because no trusted host-key pin was available. |
+| Deployed | `coinspot-platform` — live | PM2 release at `3447d8c` completed; strict SSH with the saved candidate host-key pin confirmed `npm ls` resolves Keystone 4.3.3 at `9239b834`. `/health` returned HTTP 200 with valid TLS. |
 | Deployed | `toll-platform`, `toll-ftp` — live and staging | Keystone resolves to 4.3.3 and health routes returned HTTP 200 with valid TLS. Live's read-only SFTP health check passed; staging SFTP was not exercised. |
 | Deployed | `website-v2`, `cs-dashboard-old` — General Live | Both resolve to Keystone 4.3.3; `www`, `website`, and `dashboard` health routes returned HTTP 200 with valid TLS. PUDO Explorer processes were not restarted. |
 | Deployed | `website-v2`, `cs-dashboard-old`, `core` — Core Staging | All three resolve to Keystone 4.3.3. Core and site health routes returned HTTP 200 with valid TLS; the existing `core-workers` process was left untouched. |
@@ -65,9 +65,8 @@ host-key checking.
 
 ## Remaining scope and verification gaps
 
-The live `coinspot-platform` PM2 release and public health check succeeded, but
-the installed dependency tree could not be read over SSH without a trusted host
-key. No host-key check was bypassed. TGE staging remains stopped.
+No upgraded Ubuntu/Node consumer of this Keystone fork remains pending. TGE
+staging remains stopped.
 `template-platform`, `havven-website`, and `parcels-sdk` use other Keystone
 versions and remain outside this upgraded Ubuntu/Node rollout scope.
 
