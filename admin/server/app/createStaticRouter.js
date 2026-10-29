@@ -97,6 +97,7 @@ module.exports = function createStaticRouter (keystone) {
 
 	/* Configure router */
 	router.use('/styles', less(path.resolve(__dirname + '/../../public/styles'), lessOptions));
+	router.use('/styles', express.static(stylesCachePath));
 	router.use('/styles/fonts', express.static(`${keystoneTinymcePath}/skin/fonts`));
 	router.get('/js/fields.js', bundles.fields.serve);
 	router.get('/js/signin.js', bundles.signin.serve);
