@@ -30,6 +30,8 @@ module.exports = function (req, res) {
 		assign(where, req.list.addSearchToQuery(req.query.search));
 	}
 	var query = req.list.model.find(where);
+	// Mongoose 4 has no Query#clone; keep count and result queries separate.
+	var countQuery = req.list.model.find(where);
 	if (req.query.populate) {
 		query.populate(req.query.populate);
 	}
@@ -45,7 +47,10 @@ module.exports = function (req, res) {
 				return next(null, 0);
 			}
 
-			query.clone().countDocuments().then((count) => next(null, count)).catch(err => next(err));
+			var countOperation = typeof countQuery.countDocuments === 'function'
+				? countQuery.countDocuments()
+				: countQuery.count();
+			countOperation.exec().then((total) => next(null, total)).catch(err => next(err));
 		},
 		function (count, next) {
 			if (!includeResults) {
