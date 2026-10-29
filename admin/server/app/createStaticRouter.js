@@ -7,8 +7,10 @@
  */
 
 var browserify = require('../middleware/browserify');
+var crypto = require('crypto');
 var express = require('express');
 var less = require('less-middleware');
+var os = require('os');
 var path = require('path');
 var str = require('string-to-stream');
 
@@ -71,8 +73,16 @@ module.exports = function createStaticRouter (keystone) {
 	var reactSelectPath = path.join(path.dirname(require.resolve('react-select')), '..');
 	var keystoneTinymcePath = path.dirname(require.resolve('keystone-tinymce'));
 	var customStylesPath = keystone.getPath('adminui custom styles') || '';
+	var stylesCachePath = path.join(
+		os.tmpdir(),
+		'keystone-less',
+		crypto.createHash('sha256').update(keystone.get('module root')).digest('hex')
+	);
 
 	var lessOptions = {
+		// less-middleware writes compiled CSS to `dest`; keep generated files out of the package directory
+		// so Keystone still works when node_modules is read-only in production.
+		dest: stylesCachePath,
 		render: {
 			javascriptEnabled: true,
 			modifyVars: {
