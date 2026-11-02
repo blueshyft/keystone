@@ -82,6 +82,13 @@ describe('CSRF', function () {
 			var valid = csrf.validate(memory.req, 'invalid');
 			valid.must.be.false();
 		});
+		it('must return false when the session CSRF secret is missing', function () {
+			var req = { session: {}, headers: { 'x-csrf-token': memory.token } };
+			csrf.validate(req).must.be.false();
+		});
+		it('must return false when the session is missing', function () {
+			csrf.validate({ headers: { 'x-csrf-token': memory.token } }).must.be.false();
+		});
 		it('must find the token in req', function () {
 			memory.post.body[csrf.TOKEN_KEY] = csrf.createToken(memory.post);
 			var valid = csrf.validate(memory.post);
