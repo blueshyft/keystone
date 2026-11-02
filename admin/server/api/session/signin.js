@@ -3,6 +3,9 @@ var session = require('../../../../lib/session');
 
 function signin (req, res) {
 	var keystone = req.keystone;
+	if (!keystone.get('password auth enabled')) {
+		return res.status(403).json({ error: 'password auth disabled' });
+	}
 	if (!keystone.security.csrf.validate(req)) {
 		return res.apiError(403, 'invalid csrf');
 	}

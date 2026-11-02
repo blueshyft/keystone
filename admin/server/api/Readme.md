@@ -56,6 +56,8 @@ Signs in with the provided credentials. Returns the matched user, or error infor
 
 Must include CSRF token in headers.
 
+This endpoint is available only when Keystone's `password auth enabled` option is `true`; otherwise it returns HTTP `403` with `password auth disabled`.
+
 ### POST Data
 
 * `email` (String; required) the email to find

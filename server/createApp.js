@@ -124,7 +124,12 @@ module.exports = function createApp (keystone, express) {
 	});
 
 	// Google
-	app.all('/signin', googleService.authenticateUser);
+	app.all('/signin', function (req, res, next) {
+		if (keystone.get('password auth enabled')) {
+			return res.redirect('/' + keystone.get('admin path') + '/signin');
+		}
+		return googleService.authenticateUser(req, res, next);
+	});
 
 	// Configure application routes
 	var appRouter = keystone.get('routes');

@@ -22,7 +22,7 @@ If using a custom function, it should follow the standard for express middleware
 
 <h4 data-primitive-type="Boolean"><code>password auth enabled</code></h4>
 
-When Google sign-in is installed by the application, the Admin UI sign-in route redirects to Google by default. Set this option to `true` to render Keystone's built-in email/password sign-in page instead. The default is `false`.
+This option selects the Admin UI authentication method when the application installs Google sign-in. When `false` (the default), Keystone redirects to Google and rejects password sign-in API requests. When `true`, Keystone renders the built-in email/password sign-in page, redirects Google sign-in requests there, and enables the password sign-in API. Only one method is available at a time.
 
 <h4 data-primitive-type="String"><code>user model</code></h4>
 
