@@ -124,12 +124,7 @@ module.exports = function createApp (keystone, express) {
 	});
 
 	// Google
-	app.all('/signin', function (req, res, next) {
-		if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-			return res.sendStatus(503);
-		}
-		return googleService.authenticateUser(req, res, next);
-	});
+	app.all('/signin', googleService.authenticateUser);
 
 	// Configure application routes
 	var appRouter = keystone.get('routes');
