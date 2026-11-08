@@ -1,6 +1,5 @@
 # ![KeystoneJS](http://v3.keystonejs.com/images/logo.svg)
 
-[![Build Status](https://travis-ci.org/keystonejs/keystone.svg?branch=master)](https://travis-ci.org/keystonejs/keystone)
 
 - [About Keystone](#about)
 - [Getting Started](#getting-started)
